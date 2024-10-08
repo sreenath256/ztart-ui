@@ -792,7 +792,7 @@ and let us guide you through your journey with confidence!`;
           </div>
       </section> */}
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 overflow-hidden gap-0 pb-10 pt-32">
+        <section className="grid grid-cols-1 lg:grid-cols-2 overflow-hidden gap-0 pb-10 pt-20 md:pt-32">
           <div className="flex-1 md:rounded-l-3xl ">
             <img
               className="hidden lg:block rounded-xl w-full  object-cover h-full"
@@ -980,11 +980,11 @@ const BenefitPopup = ({ benefit, onClose }) => (
 );
 
 const BenefitCard = ({ toggleBenefit, benefit, index }) => (
-  <div className="bg-white rounded-lg shadow-md hover:shadow-lg p-4 sm:p-8 transition-all duration-300">
-    <div
-      className="flex  items-center justify-between hover:cursor-pointer "
-      onClick={() => toggleBenefit(index)}
-    >
+  <div
+    className="bg-white rounded-lg  flex flex-col justify-center space-y-2 shadow-md hover:shadow-lg p-4 sm:p-8 transition-all duration-300"
+    onClick={() => toggleBenefit(index)}
+  >
+    <div className="flex  items-center justify-between hover:cursor-pointer ">
       <div className="flex flex-col  justify-startmd:items-center">
         <div className="text-2xl sm:text-3xl mr-3">{benefit.icon}</div>
         <h3 className="text-xs lg:text-lg font-PoppinsSemibold">
@@ -992,10 +992,10 @@ const BenefitCard = ({ toggleBenefit, benefit, index }) => (
         </h3>
       </div>
     </div>
-    <button className="sm:hidden text-gray-500 hover:text-gray-700">
+    <button className="md:hidden text-gray-500 hover:text-gray-700">
       <FaChevronDown />
     </button>
-    <p className="hidden sm:block text-sm lg:text-sm pt-3">
+    <p className="hidden md:block text-sm lg:text-sm pt-3">
       {benefit.description}
     </p>
   </div>
