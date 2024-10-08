@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { Carousel } from "@material-tailwind/react";
+
 import {
   InsatProf,
   insatsvg,
@@ -29,12 +31,18 @@ import {
   Testimonial,
   Demo,
   VisaImageCarousal,
-  InsatFeed
+  InsatFeed,
 } from "../components";
 import { TiTick } from "react-icons/ti";
 import { IoMdStar } from "react-icons/io";
 import { FcGoogle } from "react-icons/fc";
-import { FaArrowUp } from "react-icons/fa";
+import {
+  FaArrowUp,
+  FaArrowRight,
+  FaCheckCircle,
+  FaChevronDown,
+  FaTimes,
+} from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
 import { IoCloseSharp } from "react-icons/io5";
 import { AiOutlineUser } from "react-icons/ai";
@@ -44,50 +52,92 @@ import { IoSendSharp } from "react-icons/io5";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FiPlus } from "react-icons/fi";
+import Feedback from "../components/Feedback/Feedback";
+import { T11pic } from "../assets/index";
 
+const benefits = [
+  {
+    title: "Your Trusted Visa Service in Dubai",
+    description:
+      "Count on us for specialized visa support from start to finish. Our experienced visa consultants in Dubai ensure your process is smooth, whether you’re applying for a Tourist Visa, Visit Visa, or Business Visa.",
+    icon: "🏢",
+  },
+  {
+    title: "Tailored Visa Solutions",
+    description:
+      "Need a Schengen Visa or a Business Visa? We’ve got you covered with customized services that meet all requirements for on-time approvals. Get Visa Solutions that are built around your specific needs.",
+    icon: "🎯",
+  },
+  {
+    title: "Efficient Visa Processing",
+    description:
+      "Skip the wait and experience fast, efficient visa services. From Schengen Visa Assistance to Tourist Visas, our streamlined process delivers quick turnarounds, ensuring you’re travel-ready in no time.",
+    icon: "⚡",
+  },
+  {
+    title: "Save Your Money",
+    description:
+      "Our expert advice helps you avoid unnecessary expenses—maximize your budget and get exactly what you need.",
+    icon: "💰",
+  },
+  {
+    title: "Reliable Visa Consultancy in Dubai",
+    description:
+      "Our dedicated team offers top-notch Visa Consultancy in Dubai, providing 24/7 customer support. We’re here to assist you through every step of the process.",
+    icon: "🕰️",
+  },
+  {
+    title: "Strong Government Connections",
+    description:
+      "With our deep understanding of global visa regulations and strong ties with government bodies, we can ensure a faster, smoother visa approval experience.",
+    icon: "🤝",
+  },
+];
 
 const LandFAQ = [
   {
-    question: `What are the benefits of working with a visa consultant in Dubai?`,
-    answer: `By working with our agency, you can benefit from our expertise, save time
-    and effort, and increase your chances of obtaining your visa.`,
+    question: `What visa services do you offer in Dubai?`,
+    answer: `We provide a wide range of visa services, including Schengen Visa Assistance, Tourist Visas, Visit Visas, and Business Visas, all with expert guidance.`,
   },
   {
-    question: `What is the best way to find a reliable visa consultant in Dubai?`,
-    answer: `Research and read reviews from previous clients to find a trustworthy visa
-    consultant in Dubai.`,
+    question: `Are you a registered visa consultant in Dubai?`,
+    answer: `Yes, we are fully licensed and registered as a trusted Visa Consultant in Dubai.`,
   },
   {
-    question: `What makes Ztartvisas' visa consultant in Dubai different from others?`,
-    answer: `Years of expertise and an excellent reputation in helping customers secure
-    visas are attributes of our team of knowledgeable visa advisors at Ztartvisas,
-    makes us a trusted and reliable visa consultant in Dubai.`,
+    question: `How long does it take to process a visa?`,
+    answer: `The time varies depending on the visa type and requirements, but we specialize in fast and efficient processing, especially for Schengen Visa applications in Dubai.`,
   },
   {
-    question: `What documents do I need to provide to a visa consultant in Dubai?`,
-    answer: `Required documents vary depending on the type of visa and the country of
-    destnation.`,
+    question: `Can I apply for a visa online?`,
+    answer: `Yes, you can submit your application and documents online through our website, providing seamless visa services in Dubai.`,
   },
   {
-    question: `How can a visa consultant in Dubai help me with my visa application if I
-    have a complex case?`,
-    answer: `Experienced consultants can provide personalized guidance and
-    representation for complex cases, increasing the chances of success.`,
+    question: `Do you assist with urgent visa applications?`,
+    answer: `Yes, we offer expedited services for urgent visa applications in Dubai. Contact us for further details.`,
   },
   {
-    question: `How do I know if I need a visa to travel to my destination, and how can a
-    visa consultant in Dubai help?`,
-    answer: `Check the entry requirements for your destination country, and consult with
-    a visa consultant in Dubai for guidance and assistance.`,
+    question: `Do you assist with visa extensions or renewals?`,
+    answer: `Absolutely! We provide comprehensive assistance for visa extensions and renewals, ensuring continued support from your trusted visa agents in Dubai.`,
   },
-  {
-    question: `What are the benefits of approaching with a registered visa consultant in Dubai?`,
-    answer: `Registered consultants are authorized and experienced, providing peace of
-    mind and increasing the chances of successful visa applications.`,
-  },
+];
 
-
-]
+const highlights = [
+  {
+    title: `Professional Visa Services`,
+    description: `With our expert tourist and business visa services in Dubai, you
+                can easily explore new destinations.`,
+  },
+  {
+    title: `Streamlined Process`,
+    description: ` We make the visa application process stress-free by offering
+                easy document preparation and quick submission.`,
+  },
+  {
+    title: `Expert Guidance`,
+    description: ` Ztartvisa hndles your visa needs efficiently, ensuring smooth
+                and timely approvals for both travel and business trips.`,
+  },
+];
 
 function Homepage() {
   const [open, setOpen] = useState(false);
@@ -102,7 +152,8 @@ function Homepage() {
     mobileNo: "",
     countryId: "",
   });
-  
+
+  const navigate = useNavigate();
 
   // Update form state based on input changes
   const handleChange = (e) => {
@@ -111,6 +162,12 @@ function Homepage() {
       ...formData,
       [name]: value,
     });
+  };
+
+  const [expandedBenefit, setExpandedBenefit] = useState(null);
+
+  const toggleBenefit = (index) => {
+    setExpandedBenefit(expandedBenefit === index ? null : index);
   };
 
   // Handle form submission
@@ -137,17 +194,17 @@ function Homepage() {
       );
 
       if (!response.ok) {
-        toast.error("Please fill out all fields to proceed")
+        toast.error("Please fill out all fields to proceed");
         throw new Error("Something went wrong");
       }
 
       const data = await response.json(); // Assuming the server responds with JSON
-      toast.dark("Submission Successful")
+      toast.dark("Submission Successful");
       setFormData({
         customerName: "",
         mobileNo: "",
         countryId: "",
-      })
+      });
 
       console.log("Submission Successful", data);
       // Here you could clear the form or give feedback to the user
@@ -159,6 +216,7 @@ function Homepage() {
   useEffect(() => {
     const handleScroll = () => {
       setSticky(window.scrollY > 360);
+      setExpandedBenefit(null);
     };
 
     const handleOutsideClick = (event) => {
@@ -177,6 +235,7 @@ function Homepage() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       document.removeEventListener("click", handleOutsideClick);
+      // document.removeEventListener('mousedown', handleOutsideClick);
     };
   }, []);
 
@@ -189,6 +248,9 @@ function Homepage() {
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     const fetchCountries = async () => {
       try {
@@ -220,67 +282,152 @@ function Homepage() {
         setLoading(false);
       }
     };
-
     fetchCountries();
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Assuming 768px as the breakpoint for mobile
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const fullText = `At Ztartvisa, a leading <b>visa consultant in Dubai</b>, we
+provide expert assistance for your visa application process. Our
+dedicated team ensures accurate and compliant applications for
+popular destinations such as Australia, the UK, Italy, Canada,
+Switzerland, France, Spain, Turkey, Japan, and the USA. We stay
+updated on the latest visa laws, ensuring swift and efficient
+processing to meet critical deadlines. With continuous support
+from consultation to submission, we guarantee a seamless
+experience. Trust Ztartvisa for excellent visa services in Dubai
+and let us guide you through your journey with confidence!`;
 
-  const FAQItem = ({ question, answer }) => {
+  const shortText = fullText.slice(0, 150) + "...";
+
+  const toggleReadMore = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const HighLights = ({ title, description }) => {
     const [isOpen, setIsOpen] = useState(false);
-  
+
     const toggleOpen = () => {
       setIsOpen(!isOpen);
     };
-  
-  
+
     return (
       <div className="">
         <div
-          className={`flex gap-x-10  ${isOpen ? 'bg-white' : 'bg-white'} rounded-md md:gap-x-0  justify-between items-center  pl-0 p-4 cursor-pointer transition duration-300 ease-in-out `}
+          className={`flex gap-x-10 lg:hidden ${
+            isOpen ? "bg-white" : "bg-white"
+          } rounded-md md:gap-x-0  justify-between items-center  pl-0 p-0 cursor-pointer transition duration-300 ease-in-out `}
           onClick={toggleOpen}
         >
-          <div className="font-PoppinsMedium text-sm md:text-base pl-5">{question}</div>
+          <div className="font-PoppinsMedium text-sm flex gap-3 md:text-sm p-2 md:pl-5">
+            <TiTick className="text-visaclr  text-sm bg-gray-200 rounded-2xl" />
+
+            {title}
+          </div>
           <div
             className={`transform transition-transform ${
-              isOpen ? 'rotate-45' : 'rotate-0'
+              isOpen ? "rotate-180" : "rotate-0"
             }`}
           >
-           <FiPlus/>
+            <button className="lg:hidden text-gray-500 hover:text-gray-700">
+              <FaChevronDown />
+            </button>
           </div>
         </div>
         <div
           className={`bg-white px-5 overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+            isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <p className='p-4 pl-0 text-sm font-PoppinsRegular' >{answer}</p>
+          <p className="p-4 pl-0 text-sm font-PoppinsRegular">{description}</p>
         </div>
       </div>
     );
   };
 
-  
+  const FAQItem = ({ question, answer }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleOpen = () => {
+      setIsOpen(!isOpen);
+    };
+
+    return (
+      <div className="">
+        <div
+          className={`flex gap-x-10  ${
+            isOpen ? "bg-white" : "bg-white"
+          } rounded-md md:gap-x-0  justify-between items-center  pl-0 p-4 cursor-pointer transition duration-300 ease-in-out `}
+          onClick={toggleOpen}
+        >
+          <div className="font-PoppinsMedium text-xs md:text-sm p-2 md:pl-5">
+            {question}
+          </div>
+          <div
+            className={`transform transition-transform ${
+              isOpen ? "rotate-45" : "rotate-0"
+            }`}
+          >
+            <FiPlus />
+          </div>
+        </div>
+        <div
+          className={`bg-white px-5 overflow-hidden transition-all duration-300 ease-in-out ${
+            isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <p className="p-4 pl-0 text-sm font-PoppinsRegular">{answer}</p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <Helmet>
         <title>Best Visa Services In Dubai UAE, Visa agents In Dubai UAE</title>
-        <meta name="description" content="Best visa services in Dubai UAE. Expert visa agents in Dubai. We simplify tourist and business visa service in Dubai UAE ensuring a smooth and Steady process." />
+        <meta
+          name="description"
+          content="Best visa services in Dubai UAE. Expert visa agents in Dubai. We simplify tourist and business visa service in Dubai UAE ensuring a smooth and Steady process."
+        />
       </Helmet>
-      <main className="w-11/12 md:w-11/12 xl:w-9/12 mx-auto h-full">
+      <main className="w-11/12 md:w-11/12 xl:w-9/12 mx-auto h-full  pt-5">
+        {/* <div className="w-full h-screen  bg-red-500"></div> */}
         {/* Banner */}
-        <section className="px-2 md:px-0 w-full h-full">
-          <div className="pt-8 lg:pt-24  text-center xs:text-[40px] sm:text-[47px] md:text-5xl lg:text-7xl xl:tracking-wider font-PoppinsBold xl:font-PoppinsExtraBold">
-            <h2 className="leading-none">
-            Visa on Time,<br/> Guaranteed
-              <br className="hidden md:block" />
-            </h2>
-           <h1 className="text-base font-PoppinsRegular tracking-normal pb-2">Visa Services in Dubai</h1>
+        <section className="px-2 md:px-0 w-full   rounded-xl   ">
+          <div className="bg-[url(https://res.cloudinary.com/dqtrifv2l/image/upload/tinted_otlx6l.webp)]  h-4/6 py-24  items-center  flex flex-col  rounded-3xl bg-cover bg-center pb-5 text-white ">
+            <div className="pt-8 lg:pt-10 text-center xs:text-[40px]  sm:text-[47px] md:text-5xl lg:text-7xl xl:tracking-wider space-y-4 font-PoppinsBold xl:font-PoppinsBold ">
+              <h1 className="text-2xl md:text-5xl">
+                Get Ready To Travel
+                <br />
+              </h1>
+              <h1 className="text-xl md:text-[32px] leading-8 font-PoppinsRegular   ">
+                With Our Visa Services In Dubai
+              </h1>
+            </div>
+            <p className="text-center text-xs md:text-sm   px-9 md:px-0 xl:px-40 ">
+              Tired of the visa application maze? Ztartvisa is your one-stop
+              solution for expert visa <br />
+              services in Dubai. With our expert team, you can expect a smooth
+              journey from start to finish.
+            </p>
+            <div className="w-full flex justify-center items-center pt-4">
+              <button
+                className=" text-sm px-2 text-nowrap md:w-fit md:text-base font-PoppinsMedium md:px-10 lg:px-5 py-2 lg:py-3 capitalize border border-visaclr rounded-full text-visaclr bg-white hover:bg-visaclr hover:text-white duration-200"
+                type="submit"
+                onClick={() => navigate("/contact")}
+              >
+                Get Your Visa Today
+              </button>
+            </div>
           </div>
-          <p className="text-center text-sm md:text-base pt-2 px-9 md:px-0 xl:px-40">
-          Let Ztartvisa handle it
-          for a happy journey. Our expert team will guide you through the process,
-          ensuring your visa application is submitted correctly and processed efficiently.
-          </p>
           {/* ---FORM---- */}
           <form
             onSubmit={handleSubmit} // Add form submission handler
@@ -335,33 +482,37 @@ function Homepage() {
                     inputMode="numeric"
                     placeholder="58 550 3940"
                     pattern="[0-9]{9}"
-                    title="Please enter a 9-digit number" 
+                    title="Please enter a 9-digit number"
                     name="mobileNo"
-                value={formData.mobileNo}
-                onChange={handleChange} // Bind change handler
-                required
+                    value={formData.mobileNo}
+                    onChange={handleChange} // Bind change handler
+                    required
                   />
-                  <p className="absolute left-9 top-[14.5px] chfont font-medium">+971</p>
+                  <p className="absolute left-9 top-[14.5px] chfont font-medium">
+                    +971
+                  </p>
                   <HiOutlineDevicePhoneMobile className="absolute top-4 left-3 text-2xl text-gray-700" />
                 </div>
                 <div className="relative w-full">
-                <select className="w-fit py-4 lg:py-2.5 pl-11 outline-none appearance-none"
-             name="countryId"
-             value={formData.countryId}
-             onChange={handleChange} // Bind change handler
-             required>
-             <option value="">Select a location</option>
-                  {countries.map((country) => (
-                    <option key={country.countryId} value={country.countryId}>
-                      {country.countryName}
-                    </option>
-                  ))}
-             </select>
+                  <select
+                    className="w-fit py-4 lg:py-2.5 pl-11 outline-none appearance-none"
+                    name="countryId"
+                    value={formData.countryId}
+                    onChange={handleChange} // Bind change handler
+                    required
+                  >
+                    <option value="">Select a location</option>
+                    {countries.map((country) => (
+                      <option key={country.countryId} value={country.countryId}>
+                        {country.countryName}
+                      </option>
+                    ))}
+                  </select>
                   <IoLocationOutline className="absolute top-[14px] left-3 text-2xl text-gray-700" />
                 </div>
               </div>
               <button
-                className="bg-visaclr hover:bg-white border border-visaclr hover:text-visaclr py-4 duration-200 rounded-xl text-white text-base font-PoppinsSemibold"
+                className="w-full md:w-fit text-base font-PoppinsMedium px-10 lg:px-20 py-4 lg:py-3 capitalize border border-visaclr rounded-full text-visaclr bg-white hover:bg-visaclr hover:text-white duration-200"
                 type="submit"
               >
                 Get started!
@@ -373,15 +524,15 @@ function Homepage() {
           <form
             className={`${
               isSticky
-                ? "opacity-0"
-                : "grid grid-cols-1 lg:grid-cols-6 gap-5 mt-10"
-            }  bg-white`}
+                ? "opacity-100 mt-10"
+                : "grid grid-cols-1 lg:grid-cols-4 gap-5 mt-10"
+            }  bg-white `}
             onSubmit={handleSubmit} // Add form submission handler
           >
-            <div className="lg:col-span-5 flex flex-col md:flex-row outline outline-1 outline-gray-300 overflow-hidden  md:p-2  rounded-xl">
-              <div className="relative w-full">
+            <div className="lg:col-span-5 flex flex-col md:flex-row   items-centeroutline outline-1 outline-gray-300 overflow-hidden  md:p-2  rounded-xl">
+              <div className="relative w-full ">
                 <input
-                  className="w-full focus:outline-none py-4 lg:py-2.5 px-10 md:px-10 lg:px-9 border-b-[1px] md:border-b-0 md:border-r-2"
+                  className="w-full focus:outline-none py-4 lg:py-2.5 px-10 md:px-10 lg:px-9 border-b-[1px] md:border-b-0 md:border-r-2 "
                   type="text"
                   placeholder="Name"
                   name="customerName"
@@ -393,20 +544,23 @@ function Homepage() {
               </div>
               <div className="relative w-full">
                 <input
-                  className="w-full focus:outline-none  py-4 lg:py-2.5 pl-[5.5rem] md:pl-20 xl:pl-[4.5rem] border-b-[1px] md:border-b-0 md:border-r-2 [&::-webkit-inner-spin-button]:appearance-none"                  type="tel"
+                  className="w-full focus:outline-none  py-4 lg:py-2.5 pl-[5.5rem] md:pl-20 xl:pl-[4.5rem] border-b-[1px] md:border-b-0 md:border-r-2 [&::-webkit-inner-spin-button]:appearance-none"
+                  type="tel"
                   inputMode="numeric"
                   placeholder="58 550 3940"
                   pattern="[0-9]{9}"
-                  title="Please enter a 9-digit number" 
+                  title="Please enter a 9-digit number"
                   name="mobileNo"
                   value={formData.mobileNo}
                   onChange={handleChange} // Bind change handler
                   required
                 />
-                 <p className="absolute left-9 md:left-8 xl:left-7 top-[14.5px] lg:top-[8px] 2xl:top-[8px] chfont font-medium">+971</p>
+                <p className="absolute left-9 md:left-8 xl:left-7 top-[14.5px] lg:top-[8px] 2xl:top-[8px] chfont font-medium">
+                  +971
+                </p>
                 <HiOutlineDevicePhoneMobile className="absolute left-4 md:left-2 lg:left-1 top-[19px] lg:top-2 text-lg lg:text-2xl text-gray-700" />
               </div>
-              <div className="relative w-full">
+              <div className="relative  w-full">
                 <select
                   className="w-full focus:outline-none py-4 lg:py-2.5 px-10 md:px-9 lg:px-10 appearance-none "
                   name="countryId"
@@ -423,32 +577,129 @@ function Homepage() {
                 </select>
                 <IoLocationOutline className="absolute left-4 md:left-2 lg:left-2 top-[18px] lg:top-2 text-lg lg:text-2xl text-gray-700 pointer-events-none" />
               </div>
+              <button
+                className="w-full  md:w-fit text-base font-PoppinsMedium px-5 text-nowrap py-2 md:py-4 lg:py-3 capitalize border border-visaclr rounded-full text-visaclr bg-white  hover:bg-visaclr hover:text-white duration-200"
+                type="submit"
+              >
+                Get started!
+              </button>
             </div>
-            <button
-              className="bg-visaclr hover:bg-white border border-visaclr hover:text-visaclr py-4 lg:py-2.5 xl:px-4 duration-200 rounded-xl text-white text-base font-PoppinsSemibold"
-              type="submit"
-            >
-              Get started!
-            </button>
           </form>
         </section>
 
-        <section className="px-1 md:px-0 w-full h-full">
-         
-          {/* <div className='flex flex-col gap-3 items-center bg-[#f5f5f5] rounded-[3rem] my-10 px-5 py-14 text-center'>
+        {/* <div className='flex flex-col gap-3 items-center bg-[#f5f5f5] rounded-[3rem] my-10 px-5 py-14 text-center'>
           <img className='pb-10 w-[709px] h-full object-cover' src={PriceComp} alt="priceimage" />
           <h2 className='text-2xl lg:text-4xl font-PoppinsBold'>Expert Visa Services at Your Fingertips</h2>
           <p className='text-sm lg:text-base'>Choose our experts for a smooth visa process. Get personalized help, avoid mistakes, and increase your chances of approval.</p>
         </div> */}
+        {/* <section className="px-1 md:px-0 w-full h-full">
           <div className="px-1 md:px-0 pt-5">
             <VisaImageCarousal />
           </div>
-        </section>
-
+        </section> */}
 
         {/* carousal */}
-        <section className="py-20 lg:py-24">
+        <section className="py-20 ">
           <TravelCarousal />
+        </section>
+
+        <section className="py-8 md:py-16 px-4">
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-xl lg:text-5xl font-PoppinsExtraBold text-center capitalize">
+              Why Ztartvisa is Your
+              <br className="hidden sm:block" />
+              <span className="text-visaclr block sm:inline">
+                {" "}
+                Best Bet for On-Time Visas
+              </span>
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-2 pt-5 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+              {benefits.map((benefit, index) => (
+                <BenefitCard
+                  key={index}
+                  toggleBenefit={toggleBenefit}
+                  benefit={benefit}
+                  index={index}
+                />
+              ))}
+            </div>
+            <div className="mt-10 sm:mt-12 text-center">
+              <button
+                onClick={() => navigate("/visa")}
+                className="bg-visaclr text-white text-sm sm:text-base px-6 sm:px-8 py-3 rounded-full font-semibold transition-colors duration-300 hover:bg-visaclr-dark inline-flex items-center"
+              >
+                Start Your Visa Process
+                <FaCheckCircle className="ml-2" size={18} />
+              </button>
+            </div>
+          </div>
+          {expandedBenefit !== null && (
+            <BenefitPopup
+              benefit={benefits[expandedBenefit]}
+              onClose={() => setExpandedBenefit(null)}
+            />
+          )}
+        </section>
+
+        {/* <Feedback /> */}
+
+        <section className="flex flex-col gap-3 mt-14 ">
+          <h3 className="text-xl lg:text-5xl font-PoppinsExtraBold text-center capitalize">
+            Your journey with
+            <br />{" "}
+            <span className="text-visaclr">
+              the best visa consultant in Dubai
+            </span>
+          </h3>
+          {/* <img loading='lazy' className='rounded-2xl h-52 lg:h-[24rem] w-full object-cover mt-3' src={Grp4} alt="image" /> */}
+          {/* // add mt-5 when add image */}
+          <div className="mt-10 space-y-3">
+            {highlights.map((highlight) => (
+              <HighLights
+                title={highlight.title}
+                description={highlight.description}
+              />
+            ))}
+            <div className="hidden  lg:grid grid-cols-1 lg:grid-cols-3 gap-5 mt-10">
+              <div className="flex flex-col gap-3">
+                <span className="flex items-center gap-3">
+                  <TiTick className="text-visaclr text-sm bg-gray-200 rounded-2xl" />
+                  <h4 className="text-base lg:text-lg font-PoppinsSemibold">
+                    Professional Visa Services
+                  </h4>
+                </span>
+                <p className="pl-6 text-sm lg:text-base">
+                  With our expert tourist and business visa services in Dubai,
+                  you can easily explore new destinations.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <span className="flex items-center gap-3">
+                  <TiTick className="text-visaclr text-sm bg-gray-200 rounded-2xl" />
+                  <h4 className="text-base lg:text-lg font-PoppinsSemibold">
+                    Streamlined Process
+                  </h4>
+                </span>
+                <p className="pl-6 text-sm lg:text-base">
+                  We make the visa application process stress-free by offering
+                  easy document preparation and quick submission.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3">
+                <span className="flex items-center gap-3">
+                  <TiTick className="text-visaclr text-sm bg-gray-200 rounded-2xl" />
+                  <h4 className="text-base lg:text-lg font-PoppinsSemibold">
+                    Expert Guidance
+                  </h4>
+                </span>
+                <p className="pl-6 text-sm lg:text-base">
+                  Ztartvisa hndles your visa needs efficiently, ensuring smooth
+                  and timely approvals for both travel and business trips.
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* <section className="flex flex-col gap-10">
@@ -541,52 +792,6 @@ function Homepage() {
           </div>
       </section> */}
 
-
-
-        <section className="flex flex-col gap-3 ">
-  
-          <h2 className="text-2xl lg:text-4xl font-PoppinsExtraBold text-center capitalize">
-              Your journey with<br/> <span className="text-visaclr">the best visa consultant in Dubai</span>
-          </h2>
-          {/* <img loading='lazy' className='rounded-2xl h-52 lg:h-[24rem] w-full object-cover mt-3' src={Grp4} alt="image" /> */}
-          {/* // add mt-5 when add image */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-10">
-            <div className="flex flex-col gap-3">
-              <span className="flex items-center gap-3">
-                <TiTick className="text-visaclr text-sm bg-gray-200 rounded-2xl" />
-                <h4 className="text-lg lg:text-lg font-PoppinsSemibold">
-                  Professional Visa Services
-                </h4>
-              </span>
-              <p className="pl-6 text-base lg:text-base">
-              With our expert tourist and business visa services in Dubai, you can easily explore new destinations.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3">
-              <span className="flex items-center gap-3">
-                <TiTick className="text-visaclr text-sm bg-gray-200 rounded-2xl" />
-                <h4 className="text-lg lg:text-lg font-PoppinsSemibold">
-                  Streamlined Process
-                </h4>
-              </span>
-              <p className="pl-6 text-base lg:text-base">
-                We make the visa application process stress-free by offering easy document preparation and quick submission.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3">
-              <span className="flex items-center gap-3">
-                <TiTick className="text-visaclr text-sm bg-gray-200 rounded-2xl" />
-                <h4 className="text-lg lg:text-lg font-PoppinsSemibold">
-                Expert Guidance
-                </h4>
-              </span>
-              <p className="pl-6 text-base lg:text-base">
-              Ztartvisa hndles your visa needs efficiently,  ensuring smooth and timely approvals for both travel and business trips.
-              </p>
-            </div>
-          </div>
-        </section>
-
         <section className="grid grid-cols-1 lg:grid-cols-2 overflow-hidden gap-0 pb-10 pt-32">
           <div className="flex-1 md:rounded-l-3xl ">
             <img
@@ -597,28 +802,34 @@ function Homepage() {
             />
           </div>
           <div className="flex-1 flex flex-col gap-5 bg-[#fefce8] p-5 md:rounded-r-3xl ">
-            <h1 className="text-2xl lg:text-4xl text-center lg:text-left font-PoppinsExtraBold">
+            <h4 className="text-2xl lg:text-4xl text-center lg:text-left font-PoppinsExtraBold">
               Ztartvisa: The Smart Choice
-            </h1>
+            </h4>
             <img
               className="block lg:hidden rounded-xl w-full  object-cover h-full"
               loading="Visa assistance in dubai"
               src={ztartnews}
               alt="insta"
             />
-            <p className="text-sm lg:text-base text-justify">
-              At Ztartvisa, a leading <b>visa consultant in Dubai</b>, we provide expert
-              assistance for your visa application process. Our dedicated team ensures
-              accurate and compliant applications for popular destinations such as
-              Australia, the UK, Italy, Canada, Switzerland, France, Spain, Turkey, Japan,
-              and the USA.We stay updated on the latest visa laws, ensuring swift and
-              efficient processing to meet critical deadlines. With continuous support from
-              consultation to submission, we guarantee a seamless experience. Trust
-              Ztartvisa for excellent visa services in Dubai and let us guide you through
-              your journey with confidence!
-            </p>
+            {isMobile ? (
+              <>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: isExpanded ? fullText : shortText,
+                  }}
+                />
+                <button
+                  onClick={toggleReadMore}
+                  className="text-left text-xs font-semibold  focus:outline-none"
+                >
+                  {isExpanded ? "Read Less" : "Read More"}
+                </button>
+              </>
+            ) : (
+              <p dangerouslySetInnerHTML={{ __html: fullText }} />
+            )}
             <a
-              className="w-full text-base text-center md:w-fit px-10 py-3.5 font-PoppinsMedium rounded-full border border-visaclr duration-200 hover:bg-visaclr hover:text-white text-visaclr"
+              className="w-full text-sm md:text-base text-center md:w-fit px-10 py-2 md:py-3 font-PoppinsMedium rounded-full border border-visaclr duration-200 hover:bg-visaclr hover:text-white text-visaclr"
               href="#"
               target="_blank"
             >
@@ -631,36 +842,35 @@ function Homepage() {
           <Testimonial />
         </section>
 
-
         <section className="flex flex-col lg:flex-row gap-10  lg:py-16">
           <div className="flex-1 flex items-center text-center lg:text-left lg:items-start flex-col justify-center gap-7">
-  
-            <h1 className="text-2xl lg:text-4xl font-PoppinsExtraBold capitalize">
-            Current Visa Trends and Requirements.
-            </h1>
+            <h5 className="text-xl lg:text-4xl font-PoppinsExtraBold capitalize">
+              Current Visa Trends and Requirements.
+            </h5>
             <img
               className="block lg:hidden rounded-xl w-full  object-cover h-full"
               loading="lazy"
               src={InsatProf}
               alt="Visa Consultant in Dubai"
             />
-            <p className="text-sm lg:text-base text-justify">
-            Visa expertise and your ideal holiday together! The most up to date
-              information on tourist visa requirements for 2024 is provided by Ztartvisa,
-              your reliable partner for <b>visa services in Dubai</b>. We can assist you whether
-              your destination is the UK, USA, Japan, Spain, Turkey, Switzerland, France,
-              Italy, Canada, or Australia. Our team of professionals will handle the
-              documentation and regulations, making sure your trip is easy. Your ideal
-              vacation is only a click away with Ztartvisa.
+            <p className="text-sm lg:text-base text-center md:text-justify">
+              Visa expertise and your ideal holiday together! The most up to
+              date information on tourist visa requirements for 2024 is provided
+              by Ztartvisa, your reliable partner for{" "}
+              <b className="">visa services in Dubai</b>. We can assist you
+              whether your destination is the UK, USA, Japan, Spain, Turkey,
+              Switzerland, France, Italy, Canada, or Australia. Our team of
+              professionals will handle the documentation and regulations,
+              making sure your trip is easy. Your ideal vacation is only a click
+              away with Ztartvisa.
             </p>
             <a
-              className="w-full text-base text-center md:w-fit px-10 py-3.5 font-PoppinsMedium rounded-full border border-visaclr duration-200 hover:bg-visaclr hover:text-white text-visaclr"
+              className="w-full text-sm md:text-base text-center md:w-fit px-10 py-2 md:py-3.5 font-PoppinsMedium rounded-full border border-visaclr duration-200 hover:bg-visaclr hover:text-white text-visaclr"
               href="https://www.instagram.com/ztartvisa?igsh=aGN4anc0bW9obmh5"
               target="_blank"
             >
               Follow us on Instagram
             </a>
-        
           </div>
           <div className="flex-1">
             <img
@@ -673,34 +883,42 @@ function Homepage() {
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-3 pb-20 pt-20">
-          <div className="h-full flex flex-col justify-center">
-          <h1 className="text-2xl lg:text-4xl font-PoppinsExtraBold capitalize text-center xl:text-left">Frequently asked questions?</h1>
+          <div className="h-full flex flex-col justify-center space-y-3 ">
+            <h5 className="text-xl lg:text-5xl font-PoppinsExtraBold capitalize text-center xl:text-left">
+              Frequently asked questions?
+            </h5>
+            <p className="text-base lg:text-lg text-visaclr font-PoppinsSemibold text-center xl:text-left">
+              Got Questions? We’ve Got Answers!
+            </p>
 
+            <p className=" text-sm lg:text-base text-center xl:text-left ">
+              Here’s everything you need to know about our visa services in
+              Dubai.
+            </p>
           </div>
-        <div className="md:col-span-2">
-        {LandFAQ.map((dt,i)=>(
-            <FAQItem key={i} question={dt.question} answer={dt.answer} />
-
-          ))}
-        </div>
+          <div className="md:col-span-2  md:pl-20 ">
+            {LandFAQ.map((dt, i) => (
+              <FAQItem key={i} question={dt.question} answer={dt.answer} />
+            ))}
+          </div>
         </section>
 
         <section className="flex flex-col-reverse lg:flex-row  overflow-hidden pt-10 pb-20">
           <div className="rounded-b-2xl lg:rounded-b-none lg:rounded-l-3xl flex-1 bg-[#FEFCE8] flex flex-col justify-center p-5 md:p-10 gap-7">
-            <h1 className="text-2xl lg:text-4xl capitalize font-PoppinsExtraBold">
-              Increase visa chances,
+            <p className="text-2xl lg:text-4xl capitalize font-PoppinsExtraBold">
+              Stress-Free Visas Start Here,
               <br /> not your stress
-            </h1>
-            <p className="text-sm lg:text-base">
-              Get a free consultation and understand the visa application
-              process before you apply.
             </p>
-            <a
-              className="w-full text-base text-center md:w-fit px-10 py-3.5 font-PoppinsMedium rounded-full bg-transparent border border-visaclr duration-200 hover:bg-visaclr hover:text-white text-visaclr"
-              href="/contact"
+            <p className="text-sm lg:text-base">
+              Let’s simplify your visa application. Fast approvals, fewer
+              headaches!
+            </p>
+            <button
+              onClick={() => navigate("/contact")}
+              className="w-full text-xs md:text-base text-center text-nowrap md:w-fit px-2 py-2 md:py-3.5 font-PoppinsMedium rounded-full bg-transparent border border-visaclr duration-200 hover:bg-visaclr hover:text-white text-visaclr"
             >
-              Start with an expert
-            </a>
+              Get Your Visa Now, Fast & Easy!
+            </button>
           </div>
           <div className="flex-1">
             <img
@@ -712,13 +930,11 @@ function Homepage() {
           </div>
         </section>
 
-       
-
         {/* Go to top */}
 
         <div className="w-fit mx-auto pb-5 md:pb-0">
           <button
-            className="w-fit text-base font-PoppinsMedium px-10 lg:px-8 py-2.5 lg:py-3 flex items-center gap-3 border border-visaclr rounded-full text-visaclr hover:bg-visaclr hover:text-white duration-200"
+            className="w-fit text-sm md:text-base font-PoppinsMedium px-10 lg:px-8 py-2.5 lg:py-3 flex items-center gap-3 border border-visaclr rounded-full text-visaclr hover:bg-visaclr hover:text-white duration-200"
             onClick={scrollToTop}
           >
             <FaArrowUp />
@@ -733,3 +949,54 @@ function Homepage() {
 }
 
 export default Homepage;
+
+const BenefitPopup = ({ benefit, onClose }) => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50   transition-opacity duration-300 ease-in-out">
+    <div className="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 hover:shadow-xl hover:scale-105">
+      <div className="text-4xl mb-4 flex justify-between">
+        {benefit.icon}
+
+        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <FaTimes size={24} />
+        </button>
+      </div>
+      <h3 className="text-base lg:text-lg font-PoppinsSemibold">
+        {benefit.title}
+      </h3>
+      <p className="tpl-6 text-sm lg:text-base pt-3">{benefit.description}</p>
+      <div className="flex items-center text-indigo-600"></div>
+    </div>
+  </div>
+  //   <div className="bg-white rounded-lg p-6 w-full max-w-md">
+  //     <div className="flex justify-between items-center mb-4">
+  //       <h3 className="text-sm font-PoppinsSemibold">{benefit.title}</h3>
+  //       <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+  //         <FaTimes size={24} />
+  //       </button>
+  //     </div>
+  //     <div className="text-2xl mb-4">{benefit.icon}</div>
+  //     <p className="text-xs font-PoppinsRegular">{benefit.description}</p>
+  //   </div>
+);
+
+const BenefitCard = ({ toggleBenefit, benefit, index }) => (
+  <div className="bg-white rounded-lg shadow-md hover:shadow-lg p-4 sm:p-8 transition-all duration-300">
+    <div
+      className="flex  items-center justify-between hover:cursor-pointer "
+      onClick={() => toggleBenefit(index)}
+    >
+      <div className="flex flex-col  justify-startmd:items-center">
+        <div className="text-2xl sm:text-3xl mr-3">{benefit.icon}</div>
+        <h3 className="text-xs lg:text-lg font-PoppinsSemibold">
+          {benefit.title}
+        </h3>
+      </div>
+    </div>
+    <button className="sm:hidden text-gray-500 hover:text-gray-700">
+      <FaChevronDown />
+    </button>
+    <p className="hidden sm:block text-sm lg:text-sm pt-3">
+      {benefit.description}
+    </p>
+  </div>
+);

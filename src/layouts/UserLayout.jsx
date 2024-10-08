@@ -7,13 +7,9 @@ import { ToastContainer } from "react-toastify";
 const UserLayout = () => {
   const location = useLocation();
 
-  const showLandHeader =
-    location.pathname.startsWith("/visa") ||
-    location.pathname === "/visa-consultant-in-dubai";
-
   return (
     <div className="app">
-      {showLandHeader ? <LandHeader /> : <Header />}
+      <LandHeader />
       <ScrollToTop />
       <ToastContainer
         position="top-right"

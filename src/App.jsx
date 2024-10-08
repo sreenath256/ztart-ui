@@ -31,6 +31,7 @@ import ManageBlogs from "./admin/pages/ManageBlog";
 import ManageVisas from "./admin/pages/ManageVisas";
 import EditBlogPage from "./admin/pages/EditBlog";
 import EditVisaPage from "./admin/pages/EditVisa";
+import VisaGrid from "./pages/visas/VisaGrid";
 
 // const Home = lazy(() => import("./pages/index"));
 // const AboutUs = lazy(() => import("./pages/Aboutus/index"));
@@ -43,7 +44,7 @@ import EditVisaPage from "./admin/pages/EditVisa";
 // const LandingPage = lazy(() => import("./pages/Landing"));
 
 function App() {
-  const [admin, setAdmin] = useState(true);
+  const [admin, setAdmin] = useState(false);
 
   return (
     <>
@@ -65,6 +66,7 @@ function App() {
             <Route element={<UserLayout />}>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/" element={<Homepage />} />
+              <Route path="/visa" element={<VisaGrid />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/faq" element={<Faq />} />
               <Route path="/visa/:title" element={<VisaInner />} />

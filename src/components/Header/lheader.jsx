@@ -163,20 +163,24 @@ function LandHeader() {
 
         <ul className="text-base font-PoppinsMedium hidden xl:flex items-center gap-5">
           <li>
-            <Link className="hover:text-visaclr duration-200" onClick={()=> setPopupOpen(false)} to="/">Home</Link>
+            <Link className="hover:text-visaclr duration-200 " onClick={()=> setPopupOpen(false)} to="/">Home</Link>
           </li>
           <li>
-            <Link className="hover:text-visaclr duration-200" onClick={()=> setPopupOpen(false)} to="/about">About</Link>
+            <Link className="hover:text-visaclr duration-200" onClick={()=> setPopupOpen(false)} to="/about">About Us</Link>
           </li>
           <li>
+            <Link className="hover:text-visaclr duration-200" onClick={()=> setPopupOpen(false)} to="/visa">Visa</Link>
+          </li>
+          {/* <li>
             <Link className="hover:text-visaclr duration-200" onClick={()=> setPopupOpen(false)} to="/faq">FAQ</Link>
-          </li>
+          </li> */}
           <li>
             <Link className="hover:text-visaclr duration-200" onClick={()=> setPopupOpen(false)} to="/blogs">Blogs</Link>
           </li>
           <li>
-            <Link className="hover:text-visaclr duration-200" onClick={()=> setPopupOpen(false)} to="/contact">Contact</Link>
+            <Link className="hover:text-visaclr duration-200" onClick={()=> setPopupOpen(false)} to="/contact">Contact Us</Link>
           </li>
+          
         </ul>
 
         <div className="flex items-center gap-3">
@@ -223,16 +227,20 @@ function LandHeader() {
                 </h2>
                 <ul className="text-base pt-4 flex flex-col gap-2">
                   <li>
-                    <Link onClick={()=> setPopupOpen(false)} to="/about">About</Link>
+                    <Link onClick={()=> setPopupOpen(false)} to="/about">About Us</Link>
                   </li>
                   <li>
-                    <Link onClick={()=> setPopupOpen(false)} to="/faq">FAQ</Link>
+                    <Link onClick={()=> setPopupOpen(false)} to="/visa">Visa</Link>
+                  </li>
+                  
+                  <li>
+                    {/* <Link onClick={()=> setPopupOpen(false)} to="/faq">FAQ</Link> */}
                   </li>
                   <li>
                     <Link onClick={()=> setPopupOpen(false)} to="/blogs">Blogs</Link>
                   </li>
                   <li>
-                    <Link onClick={()=> setPopupOpen(false)} to="/contact">Contact</Link>
+                    <Link onClick={()=> setPopupOpen(false)} to="/contact">Contact Us</Link>
                   </li>
                   <li>
                     <Link onClick={()=> setPopupOpen(false)} to="/privacy-policy">Privacy Policy</Link>

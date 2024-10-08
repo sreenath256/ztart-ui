@@ -273,10 +273,10 @@ function Header() {
                     <Link onClick={()=> setPopupOpen(false)} to="/faq">FAQ</Link>
                   </li>
                   <li>
-                    <Link onClick={()=> setPopupOpen(false)} to="/blogs">Blogs</Link>
+                    <Link onClick={()=> setPopupOpen(false)} to="/blogs">Blogs Us</Link>
                   </li>
                   <li>
-                    <Link onClick={()=> setPopupOpen(false)} to="/contact">Contact</Link>
+                    <Link onClick={()=> setPopupOpen(false)} to="/contact">Contact Us</Link>
                   </li>
                   <li>
                     <Link onClick={()=> setPopupOpen(false)} to="/privacy-policy">Privacy Policy</Link>

@@ -52,6 +52,8 @@ import T7pic from './images/media/t7.jpg'
 import T8pic from './images/media/t8.jpg'
 import T9pic from './images/media/t9.jpg'
 import T10pic from './images/media/t10.jpg'
+import T11pic from './images/media/t11.jpg'
+import T13pic from './images/media/t13.jpg'
 
 
 import australiaVisa from './images/visas/australia-visa.webp';
@@ -63,7 +65,7 @@ import switzerlandVisa from './images/visas/switzer-visa.webp';
 import unitedkingVisa from './images/visas/uk-visa.webp';
 import turkeyVisa from './images/visas/TURKEY.webp';
 import japanVisa from './images/visas/JAPAN.webp';
-import usaVisa  from './images/visas/usa.webp';
+import usaVisa from './images/visas/usa.webp';
 import placeholderplace from './images/visas/placeholder.png';
 
 
@@ -117,9 +119,9 @@ import blog8pic from './images/blog/blog8.webp'
 import blog9pic from './images/blog/blog9.webp'
 import blog10pic from './images/blog/blog10.webp'
 
-export{
-    blog1pic,blog2pic,blog3pic,blog4pic,blog5pic,blog6pic,blog7pic,blog8pic,blog9pic,blog10pic,
-    turkeyVisa,japanVisa,usaVisa,
+export {
+    blog1pic, blog2pic, blog3pic, blog4pic, blog5pic, blog6pic, blog7pic, blog8pic, blog9pic, blog10pic,
+    turkeyVisa, japanVisa, usaVisa,
     placeholderplace,
     uk1Prt,
     uk2Prt,
@@ -183,7 +185,7 @@ export{
     slide1,
     slide2,
     slide3,
-    Buddy,Savemoney,
+    Buddy, Savemoney,
     Solutions,
     VisaLogoOnly,
     Client1,
@@ -197,5 +199,8 @@ export{
     T8pic,
     T9pic,
     T10pic,
-    ztartnews
+    T11pic,
+    T13pic,
+    ztartnews,
+
 }

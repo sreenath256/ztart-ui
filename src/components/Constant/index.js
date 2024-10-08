@@ -1266,7 +1266,7 @@ Spain with our visa application services.`,
   {
     id: 8,
     Imgs: turkeyVisa,
-    alttext: `turkey visa from dubai`,
+    alttext: `Turkey visa from dubai`,
     star: Trustpilotstar,
     body1: `
     <div>
