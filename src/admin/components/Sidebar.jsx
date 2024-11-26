@@ -31,22 +31,24 @@ const SidebarLink = ({ to, icon: Icon, children }) => {
 };
 
 export const Sidebar = () => {
+  // Accept handleLogout as a prop
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const handleLogout = () => {
+    // Clear user data from local storage
+    console.log("Logging out...");
+    localStorage.removeItem("user");
+    navigate("/");
+    window.location.reload()    
+  };
   const username = "Admin";
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleLogout = () => {
-    // Implement logout logic here
-    console.log("Logging out...");
-    setIsDropdownOpen(!isDropdownOpen);
-  };
   return (
     <nav className="p-4">
       <h2 className="text-2xl font-bold text-[#00a39a] mb-6 hidden lg:block">
-        Admin Panel
+        Ztart Admin Panel
       </h2>
       <ul className="space-y-2">
         <SidebarLink to="/" icon={MdDashboard}>
@@ -54,7 +56,7 @@ export const Sidebar = () => {
         </SidebarLink>
         <SidebarLink to="/add-visas" icon={MdAddCircle}>
           Add Visas
-        </SidebarLink>{" "}
+        </SidebarLink>
         <SidebarLink to="/add-blog" icon={MdAddCircle}>
           Add Blog
         </SidebarLink>
@@ -68,7 +70,7 @@ export const Sidebar = () => {
           <div className="flex ">
             <button
               onClick={toggleDropdown}
-              className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none a"
+              className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none"
               id="user-menu-button"
               aria-expanded="false"
               aria-haspopup="true"
@@ -88,7 +90,10 @@ export const Sidebar = () => {
               tabIndex="-1"
             >
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  handleLogout(); // Call handleLogout to clear the session
+                  setIsDropdownOpen(false); // Close the dropdown after logging out
+                }}
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                 role="menuitem"
                 tabIndex="-1"

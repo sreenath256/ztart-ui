@@ -9,6 +9,7 @@ import { TestimonialData } from "../Constant";
 import { useLocation } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { IoMdStar } from "react-icons/io";
+import IndivitualTestimonial from "./IndivitualTestimonial";
 
 const YourCustomPrevArrowComponent = ({ onClick, disabled }) => (
   <div
@@ -150,22 +151,7 @@ function Testimonial() {
         className="TestimonialCarousal"
       >
         {TestimonialData?.map((data, i) => {
-          return (
-            <div className="bg-[#dce1c8] p-5 rounded-xl" key={i}>
-              <ImQuotesLeft className="text-3xl text-[#a5a592]" />
-              <div className="flex flex-col  xs:min-h-[25rem] sm:min-h-[20rem]  lg:min-h-[25rem] justify-between">
-                <p className="text-xs md:text-base py-5 font-PoppinsSemibold">
-                  {data.testi}
-                </p>
-                <div className="text-xs md:text-sm capitalize font-PoppinsSemibold">
-                  <p className="">{data.name}</p>
-                  <p className="font-PoppinsRegular text-xs md:text-sm uppercase">
-                    {data.place}
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
+          return <IndivitualTestimonial data={data} key={i} />;
         })}
       </Slider>
     </>

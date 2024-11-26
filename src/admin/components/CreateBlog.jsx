@@ -5,15 +5,68 @@ import {
   MdCloudUpload,
   MdClose,
 } from "react-icons/md";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
+import axios from "axios"; // Import axios for API calls
+import { useNavigate } from "react-router-dom";
+import { vars } from "../../constents/Api";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const CreateBlog = () => {
   const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [metaTitle, setMetaTitle] = useState("");
+  const [metaDescription, setMetaDescription] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null); // image file
+  const [imageAlt, setImageAlt] = useState(null); // image alt
   const [imagePreview, setImagePreview] = useState(""); // image preview URL
   const [faqs, setFaqs] = useState([{ question: "", answer: "" }]);
+  const [loading, setLoading] = useState(false); // For button state
+  const navigate = useNavigate();
+
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      [{ font: [] }],
+      [{ size: ["small", false, "large", "huge"] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ color: [] }, { background: [] }],
+      [{ align: [] }],
+      ["link", "image", "video"],
+      ["clean"],
+      [{ script: "sub" }, { script: "super" }],
+      [{ indent: "-1" }, { indent: "+1" }],
+      [{ direction: "rtl" }],
+      ["code-block"],
+    ],
+  };
+
+  // React Quill formats configuration
+  const formats = [
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "link",
+    "image",
+    "video",
+    "color",
+    "background",
+    "align",
+    "script",
+    "indent",
+    "direction",
+    "code-block",
+  ];
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -28,17 +81,11 @@ const CreateBlog = () => {
     setImagePreview("");
   };
 
- 
-
   const handleFaqChange = (index, field, value) => {
     const newFaqs = [...faqs];
     newFaqs[index][field] = value;
     setFaqs(newFaqs);
   };
-
-  
-
-  
 
   const addFaq = () => {
     setFaqs([...faqs, { question: "", answer: "" }]);
@@ -49,14 +96,52 @@ const CreateBlog = () => {
     setFaqs(newFaqs);
   };
 
-  const handleSubmit = (e) => {
+  // API call on form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ title, description, image, faqs });
-    // Send form data to your backend here
+    setLoading(true); // Set loading state during API call
+
+    // Creating FormData to handle image and other data
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("slug", slug);
+    formData.append("metaTitle", metaTitle);
+    formData.append("imageAlt", imageAlt);
+    formData.append("metaDescription", metaDescription);
+    formData.append("description", description);
+    formData.append("file", image); // Image file
+    formData.append("faqs", JSON.stringify(faqs)); // Convert FAQs to string
+
+    try {
+      // Replace the URL with your backend API endpoint
+      const response = await axios.post(
+        `${vars.api_url}/api/1.0/admin/blog/create-blog`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Required for file upload
+          },
+        }
+      );
+      navigate("/manage-blogs");
+      console.log("Blog submitted successfully", response.data);
+      // You can reset the form or show success feedback here
+    } catch (error) {
+      console.error("Error submitting blog", error);
+      // Handle error (show error message, etc.)
+    } finally {
+      setLoading(false); // Reset loading state after API call
+    }
+  };
+
+  const handleSlugChange = (e) => {
+    // Convert input text to lowercase and replace spaces with hyphens
+    const updatedSlug = e.target.value.toLowerCase().replace(/\s+/g, "-"); // Replace spaces with hyphens
+    setSlug(updatedSlug);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto  p-4 space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold text-gray-700 mb-6 hidden lg:block">
         Add Blog
       </h1>
@@ -69,7 +154,50 @@ const CreateBlog = () => {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-visaclr focus:border-visaclr"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Slug
+          </label>
+          <input
+            type="text"
+            value={slug}
+            onChange={handleSlugChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-visaclr focus:border-visaclr"
+            required
+          />
+          {slug && (
+            <p className="text-sm pt-2 font-PoppinsLight text-[#00a39a]">
+              Generated Slug: {slug}
+            </p>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Meta Title
+          </label>
+          <input
+            type="text"
+            placeholder="meta title..."
+            value={metaTitle}
+            onChange={(e) => setMetaTitle(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-visaclr focus:border-visaclr"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Meta Description
+          </label>
+          <input
+            type="text"
+            placeholder="meta description..."
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-visaclr focus:border-visaclr"
             required
           />
         </div>
@@ -85,7 +213,7 @@ const CreateBlog = () => {
                 <div className="flex text-sm text-gray-600">
                   <label
                     htmlFor="file-upload"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-visaclrhvr hover:text-visaclr focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-visaclr"
                   >
                     <span>Upload a file</span>
                     <input
@@ -95,6 +223,7 @@ const CreateBlog = () => {
                       className="sr-only"
                       onChange={handleImageChange}
                       accept="image/*"
+                      required
                     />
                   </label>
                   <p className="pl-1">or drag and drop</p>
@@ -124,17 +253,47 @@ const CreateBlog = () => {
           )}
         </div>
       </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Image alt
+        </label>
+        <input
+          type="text"
+          value={imageAlt}
+          onChange={(e) => setImageAlt(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-visaclr focus:border-visaclr"
+          required
+        />
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Description
         </label>
 
-        <CKEditor
-          editor={ClassicEditor}
-          data={description}
-          onChange={(event, editor) => setDescription(editor.getData())}
-        />
+        <style jsx global>{`
+          .ql-editor {
+            min-height: 200px;
+            max-height:500px;
+          }
+          .ql-toolbar.ql-snow {
+            border-radius: 0.375rem 0.375rem 0 0;
+          }
+          .ql-container.ql-snow {
+            border-radius: 0 0 0.375rem 0.375rem;
+          }
+        `}</style>
+        <div className="mb-2 ">
+          <ReactQuill
+            value={description}
+            onChange={(value) => setDescription(value)}
+            placeholder="Enter the description here..."
+            modules={modules}
+            formats={formats}
+          />
+        </div>
+
+     
       </div>
 
       <div>
@@ -153,7 +312,7 @@ const CreateBlog = () => {
                 handleFaqChange(index, "question", e.target.value)
               }
               placeholder="FAQ Question"
-              className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-visaclr focus:border-visaclr"
               required
             />
             <textarea
@@ -161,7 +320,7 @@ const CreateBlog = () => {
               onChange={(e) => handleFaqChange(index, "answer", e.target.value)}
               placeholder="FAQ Answer"
               rows={2}
-              className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 mb-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-visaclr focus:border-visaclr"
               required
             />
             <button
@@ -185,9 +344,14 @@ const CreateBlog = () => {
       <div>
         <button
           type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#00a39a] hover:bg-[#15756e]"
+          disabled={loading} // Disable button when loading
+          className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#00a39a] hover:bg-[#15756e]"
+          }`}
         >
-          Submit
+          {loading ? "Submitting..." : "Submit"}
         </button>
       </div>
     </form>

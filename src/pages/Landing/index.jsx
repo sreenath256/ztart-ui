@@ -261,8 +261,9 @@ function LandingPage() {
   return (
     <>
       <Helmet>
-      <title>Best Visa Consultant in Dubai, Visa services in Dubai</title>
-        <meta name="description" content="Best visa services in Dubai UAE. Expert visa agents in Dubai. We simplify tourist and business visa service in Dubai UAE ensuring a smooth and Steady process." />
+      <title>Ztartvisa Your Expert Visa Consultant in Dubai
+      </title>
+        <meta name="description" content="We are the top visa consultant in Dubai, UAE, offer end-to-end visa services, handling all documentation for Tourist, Visit, Business & Schengen Visas etc" />
   <link rel="canonical" href={`https://ztartvisa.com/visa-consultant-in-dubai`} />
       </Helmet>
       <main className="w-11/12 md:w-11/12 xl:w-9/12 mx-auto h-full">
@@ -311,7 +312,12 @@ function LandingPage() {
                 <HiOutlineDevicePhoneMobile className="absolute left-4 md:left-2 lg:left-1 top-[19px] lg:top-3 text-lg lg:text-2xl text-gray-700" />
               </div>
               <div className="relative w-full ">
+              <label htmlFor="country-select" className="sr-only">
+                    Select your location
+                  </label>
                 <select
+                 id="country-select"
+                    aria-required="true"
                   className="w-full focus:outline-none py-4 lg:py-2.5 px-10 md:px-9 lg:px-10 appearance-none border rounded-lg"
                   name="countryId"
                   value={formData.countryId}

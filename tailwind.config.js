@@ -29,7 +29,6 @@ module.exports = {
      },
      backgroundImage: {
       'cta-bg': "url('./assets/images/visas/cta.webp')",
-      't13': "url('./assets/images/media/tinted.jpg')",
     }
    },
   

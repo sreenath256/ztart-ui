@@ -3,6 +3,7 @@ import { ScrollToTop } from "react-router-scroll-to-top";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Helmet } from "react-helmet";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -23,7 +24,7 @@ import LandingPage from "./pages/Landing";
 import BlogInner from "./pages/Blogs/inner";
 import Contact from "./pages/Contact/index";
 import AdminLayout from "./layouts/AdminLayout";
-import { Dashboard } from "./admin/pages/DashBoard";
+import  Dashboard  from "./admin/pages/DashBoard";
 import AddVisas from "./admin/pages/AddVisas";
 import CreateBlog from "./admin/components/CreateBlog";
 import LoginPage from "./admin/pages/Login";
@@ -32,6 +33,8 @@ import ManageVisas from "./admin/pages/ManageVisas";
 import EditBlogPage from "./admin/pages/EditBlog";
 import EditVisaPage from "./admin/pages/EditVisa";
 import VisaGrid from "./pages/visas/VisaGrid";
+
+
 
 // const Home = lazy(() => import("./pages/index"));
 // const AboutUs = lazy(() => import("./pages/Aboutus/index"));
@@ -43,12 +46,28 @@ import VisaGrid from "./pages/visas/VisaGrid";
 // const BlogInner = lazy(() => import("./pages/Blogs/inner"));
 // const LandingPage = lazy(() => import("./pages/Landing"));
 
+
 function App() {
   const [admin, setAdmin] = useState(false);
+  // const [admin, setAdmin] = useState(false);
+
+
+  useEffect(() => {
+    // Check if user data exists in local storage
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user) {
+        setAdmin(true); // Set admin state based on user role
+      }
+    }
+  }, []);
 
   return (
     <>
+    
       <div>
+      <ToastContainer />
         <Routes>
           {admin ? (
             <Route element={<AdminLayout />}>
@@ -64,12 +83,12 @@ function App() {
             </Route>
           ) : (
             <Route element={<UserLayout />}>
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage  setAdmin={setAdmin}/>} />
               <Route path="/" element={<Homepage />} />
               <Route path="/visa" element={<VisaGrid />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/faq" element={<Faq />} />
-              <Route path="/visa/:title" element={<VisaInner />} />
+              <Route path="/visa/:id" element={<VisaInner />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/blogs" element={<Blog />} />
@@ -77,7 +96,7 @@ function App() {
                 path="/visa-consultant-in-dubai"
                 element={<LandingPage />}
               />
-              <Route path="/blogs/:title" element={<BlogInner />} />
+              <Route path="/blogs/:id" element={<BlogInner />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           )}
@@ -87,4 +106,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;
